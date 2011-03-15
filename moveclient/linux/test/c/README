@@ -1,0 +1,5 @@
+1) copy libmov.so.1.0 into directory
+2) ./configure
+3) export LD_LIBRARY_PATH=.:$LD_LIBRARY_PATH
+3) make
+4) ./test

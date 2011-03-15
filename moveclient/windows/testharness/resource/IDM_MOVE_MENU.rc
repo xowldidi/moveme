@@ -1,0 +1,176 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MENU1 MENU 
+BEGIN
+    POPUP "File"
+    BEGIN
+        MENUITEM "Pause",                       ID_FILE_PAUSE
+        MENUITEM "Resume",                      ID_FILE_RESUME
+        MENUITEM "Prepare Camera",              ID_FILE_PREPARECAMERA
+        MENUITEM "Pause Camera",                ID_FILE_PAUSECAMERA
+        MENUITEM "Resume Camera",               ID_FILE_RESUMECAMERA
+        POPUP "Frequency"
+        BEGIN
+            MENUITEM "360hz",                       ID_FREQUENCY_360HZ
+            MENUITEM "240hz",                       ID_FREQUENCY_240HZ
+            MENUITEM "120hz",                       ID_FREQUENCY_120HZ
+            MENUITEM "60hz",                        ID_FREQUENCY_60HZ
+        END
+        POPUP "Camera Frequency"
+        BEGIN
+            MENUITEM "360hz",                       ID_CAMERAFREQUENCY_360HZ
+            MENUITEM "240hz",                       ID_CAMERAFREQUENCY_240HZ
+            MENUITEM "120hz",                       ID_CAMERAFREQUENCY_120HZ
+            MENUITEM "60hz",                        ID_CAMERAFREQUENCY_60HZ
+        END
+        POPUP "Rumble"
+        BEGIN
+            POPUP "Controller 0"
+            BEGIN
+                MENUITEM "On",                          ID_RUMBLE_CONTROLLER0_ON
+                MENUITEM "Off",                         ID_RUMBLE_CONTROLLER0_OFF
+            END
+            POPUP "Controller 1"
+            BEGIN
+                MENUITEM "On",                          ID_RUMBLE_CONTROLLER1_ON
+                MENUITEM "Off",                         ID_RUMBLE_CONTROLLER1_OFF
+            END
+            POPUP "Controller 2"
+            BEGIN
+                MENUITEM "On",                          ID_RUMBLE_CONTROLLER2_ON
+                MENUITEM "Off",                         ID_RUMBLE_CONTROLLER2_OFF
+            END
+            POPUP "Controller 3"
+            BEGIN
+                MENUITEM "On",                          ID_RUMBLE_CONTROLLER3_ON
+                MENUITEM "Off",                         ID_RUMBLE_CONTROLLER3_OFF
+            END
+        END
+        POPUP "Color"
+        BEGIN
+            POPUP "Controller 0"
+            BEGIN
+                MENUITEM "Red",                         ID_COLOR_CONTROLLER0_RED
+                MENUITEM "Blue",                        ID_COLOR_CONTROLLER0_BLUE
+                MENUITEM "Green",                       ID_COLOR_CONTROLLER0_GREEN
+            END
+            POPUP "Controller 1"
+            BEGIN
+                MENUITEM "Red",                         ID_COLOR_CONTROLLER1_RED
+                MENUITEM "Blue",                        ID_COLOR_CONTROLLER1_BLUE
+                MENUITEM "Green",                       ID_COLOR_CONTROLLER1_GREEN
+            END
+            POPUP "Controller 2"
+            BEGIN
+                MENUITEM "Red",                         ID_COLOR_CONTROLLER2_RED
+                MENUITEM "Blue",                        ID_COLOR_CONTROLLER2_BLUE
+                MENUITEM "Green",                       ID_COLOR_CONTROLLER2_GREEN
+            END
+            POPUP "Controller 3"
+            BEGIN
+                MENUITEM "Red",                         ID_COLOR_CONTROLLER3_RED
+                MENUITEM "Blue",                        ID_COLOR_CONTROLLER3_BLUE
+                MENUITEM "Green",                       ID_COLOR_CONTROLLER3_GREEN
+            END
+        END
+        POPUP "Track Hues"
+        BEGIN
+            POPUP "Controller 0"
+            BEGIN
+                MENUITEM "On",                          ID_TRACKHUES_CONTROLLER0_ON
+                MENUITEM "Off",                         ID_TRACKHUES_CONTROLLER0_OFF
+            END
+            POPUP "Controller 1"
+            BEGIN
+                MENUITEM "On",                          ID_TRACKHUES_CONTROLLER1_ON
+                MENUITEM "Off",                         ID_TRACKHUES_CONTROLLER1_OFF
+            END
+            POPUP "Controller 2"
+            BEGIN
+                MENUITEM "On",                          ID_TRACKHUES_CONTROLLER2_ON
+                MENUITEM "Off",                         ID_TRACKHUES_CONTROLLER2_OFF
+            END
+            POPUP "Controller 3"
+            BEGIN
+                MENUITEM "On",                          ID_TRACKHUES_CONTROLLER3_ON
+                MENUITEM "Off",                         ID_TRACKHUES_CONTROLLER3_OFF
+            END
+        END
+        POPUP "Camera Slices"
+        BEGIN
+            MENUITEM "8",                           ID_CAMERASLICES_8
+            MENUITEM "4",                           ID_CAMERASLICES_4
+            MENUITEM "2",                           ID_CAMERASLICES_2
+            MENUITEM "1",                           ID_CAMERASLICES_1
+        END
+        MENUITEM "Exit",                        ID_FILE_EXIT
+    END
+END
+
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

@@ -1,0 +1,7 @@
+The moveclient testharness was designed and tested on Visual Studio 8.
+
+Project setup:
+
+  New Project -> Visual C++ -> Win32 Project -> Application type: Windows Application, Additional options: Empty Project
+
+  Copy the moveclient.dll and the moveclient.h into the project directory.

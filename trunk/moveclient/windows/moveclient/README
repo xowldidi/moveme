@@ -1,0 +1,15 @@
+The moveclient was designed and tested on Visual Studio 8.
+
+Project setup:
+
+  New Project -> Visual C++ -> Win32 Project -> Application type: DLL
+
+  To configure:
+
+    Project -> Properties -> Configuration Properties
+
+      General -> Configuration type: Dynamic Library (.dll) (verify)
+
+      Linker -> General -> Input -> Addition Dependencies: WS2_32.lib, Mswsock.lib, Advapi32.lib
+
+      C/C++ -> Advance -> Compile As: Complile as C Code (/TC) (verify after importing files)

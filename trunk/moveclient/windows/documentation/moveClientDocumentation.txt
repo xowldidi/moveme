@@ -1,0 +1,79 @@
+Overview:
+
+  The moveclient is a Windows DLL that handles connecting to and receiving Move data from a PS3 running as a MoveServer.  The moveclient maintains two connections to the MoveServer: the first uses a blocking TCP socket and acts as a control channel; the second uses a non-blocking UDP socket, runs in a separate thread, and acts a transfer channel.  Please note that this DLL is meant to be loaded on a per process basis and is not thread safe.
+
+
+Usage:
+
+  The DLL exposes the following functions: Connect, Disconnect, Pause, Resume, PauseCamera, ResumeCamera, UpdateFrequency, CameraUpdateFrequency, Rumble, ForceRGB,
+TrackHues, PrepareCamera, CameraSetNumSlices.
+
+
+  Connect:
+  
+    Connect handles connecting to the PS3 MoveServer.  It accepts three parameters: a pointer to a character array containing either a remote address or an ip address; a pointer to a character array containing a port, and pointer to a MoveStateDeferred.   Upon a successful connection, Connect fires off a thread in which the UpdateMoveState function (which recieves controller and camera data) will execute. 
+    
+    The UpdateMoveState function accepts a pointer to a MoveStateDeferred, and relies on select() to allow it to perform network communication in an asynchronous manner.  Upon receiving a packet, UpdateMoveState deserializes the header to determine the type of packet it has recieved.  A packet is either of the type MoveServerPacket and contains controller state, or of the type MoveServerCameraFrameSlice and contains an image slice from the camera.  For each type of packet, the data is first deserialized and then the respective callback function taken from the MoveStateDeferred structure invoked.  If a callback funtions returns an error the associated update failure function is invoked with the error return code from the failed invocation.
+    
+    The desired behavior of the success callback functions are that they copy the passed in data into a different structure for further processing and return immediately to avoid blocking the UpdateMoveState thread.  Multiple calls to Connect after a successful connection will return successfully and have no effect.
+
+
+  Disconnect:
+
+    Disconnect handles disconnecting from the PS3 MoveServer.  It takes care of cleanly shutting down the network connection with the MoveServer, stopping the transfer thread, closing the TCP and UDP sockets, and performing all necessary Windows specific cleanup.  Multiple calls to Disconnect will return successfully and have no effect.  You MUST call Disconnect before unloading the DLL in order for the proper cleanup to occur.
+
+
+  Pause:
+
+    Pause informs the MoveServer to stop sending it MoveServerPackets (controller data) over the UDP socket.
+
+
+  Resume:
+
+    Resume informs the MoveServer to resume sending it MoveServerPackets (controller data) over the UDP socket.
+
+
+  PauseCamera:
+
+    PauseCamera informs the MoveServer to stop sending it MoveServerCameraFrameSlicePackets (camera frames) over the UDP socket.
+
+
+  ResumeCamera:
+
+    ResumeCamera informs the MoveServer to resume sending it MoveServerCameraFrameSlicePackets (camera frames) over the UDP socket.
+
+
+  UpdateFrequency:
+
+    UpdateFrequency allows you to alter the frequency which the MoveServer is sending MoveServerPackets.  The value should fall into the range of 1 - 1000, and represents the millisecond delay interval at which packets will be sent.  For example, passing a value of 16 will result in a packet being sent every 16ms, equal to a frequency of 60hz.
+
+
+  UpdateCameraFrequency:
+
+    UpdateCameraFrequency allows you to alter the frequency which the MoveServer is sending MoveServerCameraFrameSlicePackets.  The value should fall into the range of 1 - 1000, and represents the millisecond delay interval at which packets will be sent.  For example, passing a value of 16 will result in a packet being sent every 16ms, equal to a frequency of 60hz.
+
+
+  Rumble:
+
+    Rumble turns on rumble for the specified controller.  Its accepts a controller number and a rumble value in the range of 1 - 100 which indicates the strength at which the controller should rumble.
+
+
+  ForceRGB:
+
+    ForceRGB will force the specified controller to change it's color to the specified r,g,b values.  Valid r,g,b values are between 0 and 1.0.
+
+
+  TrackHues:
+    
+    Starts hue tracking for the specified controller.
+
+  
+  PrepareCamera:
+
+    Sets the maximum exposure and the image quality for the camera.
+
+
+  CameraSetNumSlices:
+
+    Sets the number of slices the camera image will be divided into.  Valid slice values are in the range of 1 - 8.
+

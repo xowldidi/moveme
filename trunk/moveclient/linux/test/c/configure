@@ -1,0 +1,4 @@
+#! /bin/bash
+
+/sbin/ldconfig -v -n .
+ln -sf libmove.so.1 libmove.so

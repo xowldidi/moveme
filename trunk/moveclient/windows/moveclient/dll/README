@@ -10,6 +10,6 @@ Project setup:
 
       General -> Configuration type: Dynamic Library (.dll) (verify)
 
-      Linker -> General -> Input -> Addition Dependencies: WS2_32.lib, Mswsock.lib, Advapi32.lib
+      Linker -> General -> Input -> Addition Dependencies: WS2_32.lib Mswsock.lib Advapi32.lib
 
       C/C++ -> Advance -> Compile As: Complile as C Code (/TC) (verify after importing files)

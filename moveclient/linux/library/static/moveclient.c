@@ -730,3 +730,27 @@ int movemeCameraSetNumSlices(uint32_t slices) {
   return sendRequestPacket(MOVE_CLIENT_REQUEST_CAMERA_FRAME_CONFIG_NUM_SLICES, slices);
 
 }
+
+
+int movemeEnableSword(void) {
+
+  if (!sConnected) {
+    return MOVE_CLIENT_ERROR;
+
+  }
+
+  return sendRequestPacket(MOVE_CLIENT_REQUEST_DRAW_SWORD_ENABLE, 0);
+
+}
+
+
+int movemeDisableSword(void) {
+
+  if (!sConnected) {
+    return MOVE_CLIENT_ERROR;
+
+  }
+
+  return sendRequestPacket(MOVE_CLIENT_REQUEST_DRAW_SWORD_DISABLE, 0);
+
+}

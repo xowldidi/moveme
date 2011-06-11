@@ -291,7 +291,6 @@ int movemePrepareCamera(uint32_t max_exposure, float image_quality);
 int movemeCameraSetNumSlices(uint32_t slices);
 int movemeEnableSword(void);
 int movemeDisableSword(void);
-
 bool movemePacketIsValid(const MoveServerPacketHeader &packetHeader);
 bool movemeGetPacket(MoveServerPacket &myMoveServerPacket);
 bool movemeGetCameraPacket(MoveServerCameraFrameSlicePacket &myMoveServerCameraFrameSlicePacket);

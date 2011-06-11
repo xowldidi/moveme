@@ -8,9 +8,10 @@
 #include <stdlib.h>
 #include "moveclient.h"
 
-static MoveServerPacket myMoveServerPacket;
-static MoveServerCameraFrameSlicePacket myMoveServerCameraFrameSlicePacket;
-CRITICAL_SECTION myMoveStateCriticalSection;
+// client copy of MoveServer packets
+static MoveServerPacket clientMoveServerPacket;
+static MoveServerCameraFrameSlicePacket clientMoveServerCameraFrameSlicePacket;
+CRITICAL_SECTION clientMoveServerPacketCriticalSection;
 
 static int sendRequestPacket(uint32_t, uint32_t);
 static int sendRequestPacketRumble(uint32_t, uint32_t);
@@ -34,7 +35,6 @@ BOOL sTransferring = FALSE;
   int packet_size = sizeof(packet_data); \
   int payload_size = packet_size - sizeof(packet_data.header); \
   /* Setup header */ setupHeader(&packet_data.header, _cr, payload_size);
-
 
 // Local functions
 static __inline void setupHeader(LPMoveServerRequestPacketHeader header, uint32_t client_request, uint32_t payload_size)
@@ -293,7 +293,7 @@ DWORD WINAPI UpdateMoveState(LPVOID)
           }
 
         } else {
-	      EnterCriticalSection(&myMoveStateCriticalSection);
+	      EnterCriticalSection(&clientMoveServerPacketCriticalSection);
 
           // Get pointer to header in the buffer
 		      LPMoveServerPacketHeader lpMoveServerPacketHeader = (LPMoveServerPacketHeader) &buffer[0];
@@ -302,17 +302,17 @@ DWORD WINAPI UpdateMoveState(LPVOID)
           deserializeMoveServerPacketHeader(lpMoveServerPacketHeader);
 
           if (lpMoveServerPacketHeader->packet_code == MOVE_PACKET_CODE_STANDARD) {
-            memcpy_s(&myMoveServerPacket, packet_size, (void *)lpMoveServerPacketHeader, packet_size);
+            memcpy_s(&clientMoveServerPacket, packet_size, (void *)lpMoveServerPacketHeader, packet_size);
 
             // Deserialize packet
-            deserializeMoveServerPacket(&myMoveServerPacket);
+            deserializeMoveServerPacket(&clientMoveServerPacket);
 
           }else if (lpMoveServerPacketHeader->packet_code == MOVE_PACKET_CODE_CAMERA_FRAME_SLICE) {
-            memcpy_s(&myMoveServerCameraFrameSlicePacket, cameraPacketSize, (void *)lpMoveServerPacketHeader, cameraPacketSize);
+            memcpy_s(&clientMoveServerCameraFrameSlicePacket, cameraPacketSize, (void *)lpMoveServerPacketHeader, cameraPacketSize);
 
           }
 
-        LeaveCriticalSection(&myMoveStateCriticalSection);
+        LeaveCriticalSection(&clientMoveServerPacketCriticalSection);
         }
 
         // Cleanup set
@@ -400,12 +400,16 @@ int movemeConnect(PCSTR lpRemoteAddress, PCSTR lpPort)
   tsa_len = sizeof(transfer);
   udpBufferSize = 512 * 1024;
 
+  InitializeCriticalSection(&clientMoveServerPacketCriticalSection);
+
+  // zero out the client-side copy of the Move server packets (inits them as invalid)
+  memset(&clientMoveServerPacket, 0, sizeof(MoveServerPacket));
+  memset(&clientMoveServerCameraFrameSlicePacket, 0, sizeof(MoveServerCameraFrameSlicePacket));
+
   if (sConnected) {
     return MOVE_CLIENT_OK;
 
   }
-
-  InitializeCriticalSection(&myMoveStateCriticalSection);
 
   // Initialize Winsock
   if (WSAStartup(MAKEWORD(2, 2), &wsaData)) {
@@ -530,8 +534,10 @@ int movemeConnect(PCSTR lpRemoteAddress, PCSTR lpPort)
 }
 
 // PS3 Disconnect
-int movemeDisconnect()
-{
+int movemeDisconnect() {
+
+  // Cleanup critical section
+  DeleteCriticalSection(&clientMoveServerPacketCriticalSection);
 
   if (!sConnected) {
     return MOVE_CLIENT_OK;
@@ -539,9 +545,6 @@ int movemeDisconnect()
 
   // Update internal state
   sConnected = FALSE;
-
-  // Cleanup critical section
-  DeleteCriticalSection(&myMoveStateCriticalSection);
 
   // Stop UpdateMoveState thread
   if (sTransferring) {
@@ -566,17 +569,8 @@ int movemeDisconnect()
 
 }
 
-// Copy local client move state into app's copy
-void movemeGetState(const int whichGem, MoveState &myMoveState, MoveStatus &myMoveStatus)
-{
-	EnterCriticalSection(&myMoveStateCriticalSection);
-	myMoveStatus = myMoveServerPacket.status[whichGem];
-	myMoveState  = myMoveServerPacket.state[whichGem];
-	LeaveCriticalSection(&myMoveStateCriticalSection);
-}
+int movemePause(void) {
 
-int movemePause(void)
-{
   if (!sConnected || !sTransferring) {
     return MOVE_CLIENT_ERROR;
   }
@@ -584,8 +578,8 @@ int movemePause(void)
   return sendRequestPacket(MOVE_CLIENT_REQUEST_PAUSE, 0);
 }
 
-int movemeResume(void)
-{
+int movemeResume(void) {
+
   if (!sConnected || !sTransferring) {
     return MOVE_CLIENT_ERROR;
   }
@@ -593,8 +587,8 @@ int movemeResume(void)
   return sendRequestPacket(MOVE_CLIENT_REQUEST_RESUME, 0);
 }
 
-int movemePauseCamera(void)
-{
+int movemePauseCamera(void) {
+
   if (!sConnected || !sTransferring) {
     return MOVE_CLIENT_ERROR;
   }
@@ -602,8 +596,8 @@ int movemePauseCamera(void)
   return sendRequestPacket(MOVE_CLIENT_REQUEST_CAMERA_FRAME_PAUSE, 0);
 }
 
-int movemeResumeCamera(void)
-{
+int movemeResumeCamera(void) {
+
   if (!sConnected || !sTransferring) {
     return MOVE_CLIENT_ERROR;
   }
@@ -611,26 +605,26 @@ int movemeResumeCamera(void)
   return sendRequestPacket(MOVE_CLIENT_REQUEST_CAMERA_FRAME_RESUME, 0);
 }
 
-int movemeUpdateFrequency(uint32_t frequency)
-{
+int movemeUpdateDelay(uint32_t delay) { // in ms
+
   if (!sConnected) {
     return MOVE_CLIENT_ERROR;
   }
 
-  return sendRequestPacket(MOVE_CLIENT_REQUEST_DELAY_CHANGE, frequency);
+  return sendRequestPacket(MOVE_CLIENT_REQUEST_DELAY_CHANGE, delay);
 }
 
-int movemeUpdateCameraFrequency(uint32_t frequency)
-{
+int movemeUpdateCameraDelay(uint32_t delay) { // in ms (16 is the minimum)
+
   if (!sConnected) {
     return MOVE_CLIENT_ERROR;
   }
 
-  return sendRequestPacket(MOVE_CLIENT_REQUEST_CAMERA_FRAME_DELAY_CHANGE, frequency);
+  return sendRequestPacket(MOVE_CLIENT_REQUEST_CAMERA_FRAME_DELAY_CHANGE, delay);
 }
 
-int movemeRumble(uint32_t gem_num, uint32_t rumble)
-{
+int movemeRumble(uint32_t gem_num, uint32_t rumble) {
+
   if (!sConnected) {
     return MOVE_CLIENT_ERROR;
   }
@@ -638,8 +632,8 @@ int movemeRumble(uint32_t gem_num, uint32_t rumble)
   return sendRequestPacketRumble(gem_num, rumble);
 }
 
-int movemeForceRGB(uint32_t gem_num, float r, float g, float b)
-{
+int movemeForceRGB(uint32_t gem_num, float r, float g, float b) {
+
   if (!sConnected) {
     return MOVE_CLIENT_ERROR;
   }
@@ -647,8 +641,8 @@ int movemeForceRGB(uint32_t gem_num, float r, float g, float b)
   return sendRequestPacketForceRGB(gem_num, r, g, b);
 }
 
-int movemeTrackHues(uint32_t req_hue_gem_0, uint32_t req_hue_gem_1, uint32_t req_hue_gem_2, uint32_t req_hue_gem_3)
-{
+int movemeTrackHues(uint32_t req_hue_gem_0, uint32_t req_hue_gem_1, uint32_t req_hue_gem_2, uint32_t req_hue_gem_3) {
+
   if (!sConnected) {
     return MOVE_CLIENT_ERROR;
   }
@@ -656,8 +650,8 @@ int movemeTrackHues(uint32_t req_hue_gem_0, uint32_t req_hue_gem_1, uint32_t req
   return sendRequestPacketTrackHues(req_hue_gem_0, req_hue_gem_1, req_hue_gem_2, req_hue_gem_3);
 }
 
-int movemePrepareCamera(uint32_t max_exposure, float image_quality)
-{
+int movemePrepareCamera(uint32_t max_exposure, float image_quality) {
+
   if (!sConnected) {
     return MOVE_CLIENT_ERROR;
   }
@@ -665,11 +659,51 @@ int movemePrepareCamera(uint32_t max_exposure, float image_quality)
   return sendRequestPacketPrepareCamera(max_exposure, image_quality);
 }
 
-int movemeCameraSetNumSlices(uint32_t slices)
-{
+int movemeCameraSetNumSlices(uint32_t slices) {
+
   if (!sConnected) {
     return MOVE_CLIENT_ERROR;
   }
 
   return sendRequestPacket(MOVE_CLIENT_REQUEST_CAMERA_FRAME_CONFIG_NUM_SLICES, slices);
+}
+
+int movemeEnableSword(void) {
+
+  if (!sConnected) {
+    return MOVE_CLIENT_ERROR;
+  }
+
+  return sendRequestPacket(MOVE_CLIENT_REQUEST_DRAW_SWORD_ENABLE, 0);
+}
+
+int movemeDisableSword(void) {
+
+  if (!sConnected) {
+    return MOVE_CLIENT_ERROR;
+  }
+
+  return sendRequestPacket(MOVE_CLIENT_REQUEST_DRAW_SWORD_DISABLE, 0);
+}
+
+bool movemePacketIsValid(const MoveServerPacketHeader &packetHeader) {
+	return( packetHeader.magic == MOVE_PACKET_MAGIC );
+
+}
+
+// Copy local client move server state into the app's copy
+bool movemeGetPacket(MoveServerPacket &myMoveServerPacket) {
+	EnterCriticalSection(&clientMoveServerPacketCriticalSection);
+	myMoveServerPacket = clientMoveServerPacket;
+	LeaveCriticalSection(&clientMoveServerPacketCriticalSection);
+
+	return( movemePacketIsValid(myMoveServerPacket.header) );
+}
+
+bool movemeGetCameraPacket(MoveServerCameraFrameSlicePacket &myMoveServerCameraFrameSlicePacket) {
+	EnterCriticalSection(&clientMoveServerPacketCriticalSection);
+	myMoveServerCameraFrameSlicePacket = clientMoveServerCameraFrameSlicePacket ;
+	LeaveCriticalSection(&clientMoveServerPacketCriticalSection);
+
+	return( movemePacketIsValid(myMoveServerCameraFrameSlicePacket.header) );
 }

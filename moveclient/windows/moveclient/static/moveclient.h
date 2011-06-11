@@ -55,6 +55,9 @@ typedef enum MOVE_CLIENT_REQUESTS {
 	MOVE_CLIENT_REQUEST_CAMERA_FRAME_PAUSE = 0x25,
 	MOVE_CLIENT_REQUEST_CAMERA_FRAME_RESUME = 0x26,
 
+	MOVE_CLIENT_REQUEST_DRAW_SWORD_DISABLE = 0x27, // no payload, disable sword drawing
+	MOVE_CLIENT_REQUEST_DRAW_SWORD_ENABLE = 0x28,  // no payload, enable sword drawing
+
 } MOVE_CLIENT_REQUESTS;
 
 #ifndef ntohll
@@ -187,7 +190,7 @@ typedef struct _MoveConnectionConfig
 
 typedef struct _MoveStatus
 {
-	uint32_t connected;
+	uint32_t connected; // connected==1 means the controller is ready to be used
 	uint32_t code;
 	uint64_t flags;
 
@@ -275,18 +278,23 @@ typedef struct _MoveServerRequestPacketPrepareCamera {
 
 int movemeConnect(PCSTR lpRemoteAddress, PCSTR lpPort);
 int movemeDisconnect(void);
-void movemeGetState(const int whichGem, MoveState &myMoveState, MoveStatus &myMoveStatus);
 int movemePause(void);
 int movemeResume(void);
 int movemePauseCamera(void);
 int movemeResumeCamera(void);
-int movemeUpdateFrequency(uint32_t frequency);
-int movemeUpdateCameraFrequency(uint32_t frequency);
+int movemeUpdateDelay(uint32_t delay); // in ms between updates
+int movemeUpdateCameraDelay(uint32_t delay); // in ms between updates
 int movemeRumble(uint32_t gem_num, uint32_t rumble);
 int movemeForceRGB(uint32_t gem_num, float r, float g, float b);
 int movemeTrackHues(uint32_t req_hue_gem_0, uint32_t req_hue_gem_1, uint32_t req_hue_gem_2, uint32_t req_hue_gem_3);
 int movemePrepareCamera(uint32_t max_exposure, float image_quality);
 int movemeCameraSetNumSlices(uint32_t slices);
+int movemeEnableSword(void);
+int movemeDisableSword(void);
+
+bool movemePacketIsValid(const MoveServerPacketHeader &packetHeader);
+bool movemeGetPacket(MoveServerPacket &myMoveServerPacket);
+bool movemeGetCameraPacket(MoveServerCameraFrameSlicePacket &myMoveServerCameraFrameSlicePacket);
 
 #ifdef __cplusplus
 }

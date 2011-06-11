@@ -54,8 +54,8 @@ PAUSEPROC gpauseProcAdd;
 RESUMEPROC gresumeProcAdd;
 PAUSECAMERAPROC gpauseCameraProcAdd;
 RESUMECAMERAPROC gresumeCameraProcAdd;
-FREQUENCYPROC gfrequencyProcAdd;
-CAMERAFREQUENCYPROC gcameraFrequencyProcAdd;
+FREQUENCYPROC gdelayProcAdd;
+CAMERAFREQUENCYPROC gcameraDelayProcAdd;
 RUMBLEPROC grumbleProcAdd;
 FORCERGBPROC gforceRGBProcAdd;
 TRACKHUESPROC gtrackHuesProcAdd;
@@ -104,8 +104,8 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     gresumeProcAdd = (RESUMEPROC) GetProcAddress(hinstLib, "Resume");
     gpauseCameraProcAdd = (PAUSECAMERAPROC) GetProcAddress(hinstLib, "PauseCamera");
     gresumeCameraProcAdd = (RESUMECAMERAPROC) GetProcAddress(hinstLib, "ResumeCamera");
-    gfrequencyProcAdd = (FREQUENCYPROC) GetProcAddress(hinstLib, "UpdateFrequency");
-    gcameraFrequencyProcAdd = (CAMERAFREQUENCYPROC) GetProcAddress(hinstLib, "UpdateCameraFrequency");
+    gdelayProcAdd = (FREQUENCYPROC) GetProcAddress(hinstLib, "UpdateDelay");
+    gcameraDelayProcAdd = (CAMERAFREQUENCYPROC) GetProcAddress(hinstLib, "UpdateCameraDelay");
     grumbleProcAdd = (RUMBLEPROC) GetProcAddress(hinstLib, "Rumble");
     gforceRGBProcAdd = (FORCERGBPROC) GetProcAddress(hinstLib, "ForceRGB");
     gtrackHuesProcAdd = (TRACKHUESPROC) GetProcAddress(hinstLib, "TrackHues");
@@ -161,16 +161,16 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
     }
 
-    if (gfrequencyProcAdd == NULL) {
-      MessageBox(NULL, "Resolving Frequency Failed!", "Error!", MB_ICONEXCLAMATION | MB_OK);
+    if (gdelayProcAdd == NULL) {
+      MessageBox(NULL, "Resolving Delay Failed!", "Error!", MB_ICONEXCLAMATION | MB_OK);
       cleanMain(lpMoveStateDeferred, lpMoveServerPacket, lpMoveServerCameraFrameSlicePacket, hinstLib);
 
       return 0;
 
     }
 
-    if (gcameraFrequencyProcAdd == NULL) {
-      MessageBox(NULL, "Resolving Camera Frequency Failed!", "Error!", MB_ICONEXCLAMATION | MB_OK);
+    if (gcameraDelayProcAdd == NULL) {
+      MessageBox(NULL, "Resolving Camera Delay Failed!", "Error!", MB_ICONEXCLAMATION | MB_OK);
       cleanMain(lpMoveStateDeferred, lpMoveServerPacket, lpMoveServerCameraFrameSlicePacket, hinstLib);
 
       return 0;
@@ -410,61 +410,61 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
           break;
 
-          // Frequency
+          // Delay
         case ID_FREQUENCY_360HZ:
 
-          if ((gfrequencyProcAdd)(2))
+          if ((gdelayProcAdd)(2))
             MessageBox(NULL, "PS3 Frequency 360hz Failed", "Error", MB_ICONEXCLAMATION | MB_OK);
 
           break;
 
         case ID_FREQUENCY_240HZ:
 
-          if ((gfrequencyProcAdd)(4))
+          if ((gdelayProcAdd)(4))
             MessageBox(NULL, "PS3 Frequency 240hz Failed", "Error", MB_ICONEXCLAMATION | MB_OK);
 
           break;
 
         case ID_FREQUENCY_120HZ:
 
-          if ((gfrequencyProcAdd)(8))
+          if ((gdelayProcAdd)(8))
             MessageBox(NULL, "PS3 Frequency 120hz Failed", "Error", MB_ICONEXCLAMATION | MB_OK);
 
           break;
 
         case ID_FREQUENCY_60HZ:
 
-          if ((gfrequencyProcAdd)(16))
+          if ((gdelayProcAdd)(16))
             MessageBox(NULL, "PS3 Frequency 60hz Failed", "Error", MB_ICONEXCLAMATION | MB_OK);
 
           break;
 
 
-          // Camera Frequency
+          // Camera Delay
         case ID_CAMERAFREQUENCY_360HZ:
 
-          if ((gcameraFrequencyProcAdd)(2))
+          if ((gcameraDelayProcAdd)(2))
             MessageBox(NULL, "PS3 Camera Frequency 360hz Failed", "Error", MB_ICONEXCLAMATION | MB_OK);
 
           break;
 
         case ID_CAMERAFREQUENCY_240HZ:
 
-          if ((gcameraFrequencyProcAdd)(4))
+          if ((gcameraDelayProcAdd)(4))
             MessageBox(NULL, "PS3 Camera Frequency 240hz Failed", "Error", MB_ICONEXCLAMATION | MB_OK);
 
           break;
 
         case ID_CAMERAFREQUENCY_120HZ:
 
-          if ((gcameraFrequencyProcAdd)(8))
+          if ((gcameraDelayProcAdd)(8))
             MessageBox(NULL, "PS3 Camera Frequency 120hz Failed", "Error", MB_ICONEXCLAMATION | MB_OK);
 
           break;
 
         case ID_CAMERAFREQUENCY_60HZ:
 
-          if ((gcameraFrequencyProcAdd)(16))
+          if ((gcameraDelayProcAdd)(16))
             MessageBox(NULL, "PS3 Camera Frequency 60hz Failed", "Error", MB_ICONEXCLAMATION | MB_OK);
 
           break;

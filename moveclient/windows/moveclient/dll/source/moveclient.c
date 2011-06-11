@@ -551,26 +551,26 @@ __declspec(dllexport) INT __cdecl ResumeCamera(void) {
 }
 
 
-__declspec(dllexport) INT __cdecl UpdateFrequency(uint32_t frequency) {
+__declspec(dllexport) INT __cdecl UpdateDelay(uint32_t delay) {
 
   if (!sConnected) {
     return MOVE_CLIENT_ERROR;
 
   }
 
-  return sendRequestPacket(MOVE_CLIENT_REQUEST_DELAY_CHANGE, frequency);
+  return sendRequestPacket(MOVE_CLIENT_REQUEST_DELAY_CHANGE, delay);
 
 }
 
 
-__declspec(dllexport) INT __cdecl UpdateCameraFrequency(uint32_t frequency) {
+__declspec(dllexport) INT __cdecl UpdateCameraDelay(uint32_t delay) {
 
   if (!sConnected) {
     return MOVE_CLIENT_ERROR;
 
   }
 
-  return sendRequestPacket(MOVE_CLIENT_REQUEST_CAMERA_FRAME_DELAY_CHANGE, frequency);
+  return sendRequestPacket(MOVE_CLIENT_REQUEST_CAMERA_FRAME_DELAY_CHANGE, delay);
 
 }
 

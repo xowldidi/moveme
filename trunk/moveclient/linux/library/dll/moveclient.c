@@ -516,26 +516,26 @@ int resumeCamera(void) {
 }
 
 
-int updateFrequency(uint32_t frequency) {
+int updateDelay(uint32_t delay) {
 
   if (!s_connected) {
     return MOVE_CLIENT_ERROR;
 
   }
 
-  return sendRequestPacket(MOVE_CLIENT_REQUEST_DELAY_CHANGE, frequency);
+  return sendRequestPacket(MOVE_CLIENT_REQUEST_DELAY_CHANGE, delay);
 
 }
 
 
-int updateCameraFrequency(uint32_t frequency) {
+int updateCameraDelay(uint32_t delay) {
 
   if (!s_connected) {
     return MOVE_CLIENT_ERROR;
 
   }
 
-  return sendRequestPacket(MOVE_CLIENT_REQUEST_CAMERA_FRAME_DELAY_CHANGE, frequency);
+  return sendRequestPacket(MOVE_CLIENT_REQUEST_CAMERA_FRAME_DELAY_CHANGE, delay);
 
 }
 

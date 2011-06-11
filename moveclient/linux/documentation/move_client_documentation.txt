@@ -5,7 +5,7 @@ Overview:
 
 Usage:
 
-  The library exposes the following functions: serverConnect, serverDisconnect, pause, resume, pauseCamera, resumeCamera, updateFrequency, cameraUpdateFrequency, rumble, forceRGB, trackHues, prepareCamera, cameraSetNumSlices.
+  The library exposes the following functions: serverConnect, serverDisconnect, pause, resume, pauseCamera, resumeCamera, updateDelay, cameraUpdateDelay, rumble, forceRGB, trackHues, prepareCamera, cameraSetNumSlices.
   
 
   serverConnect:
@@ -42,14 +42,14 @@ Usage:
     ResumeCamera informs the MoveServer to resume sending it MoveServerCameraFrameSlicePackets (camera frames) over the UDP socket.
 
 
-  updateFrequency:
+  updateDelay:
 
-    UpdateFrequency allows you to alter the frequency which the MoveServer is sending MoveServerPackets.  The value should fall into the range of 1 - 1000, and represents the millisecond delay interval at which packets will be sent.  For example, passing a value of 16 will result in a packet being sent every 16ms, equal to a frequency of 60hz.
+    UpdateDelay allows you to alter the delay which the MoveServer is sending MoveServerPackets.  The value should fall into the range of 1 - 1000, and represents the millisecond delay interval at which packets will be sent.  For example, passing a value of 16 will result in a packet being sent every 16ms, equal to a frequency of 60hz.
 
 
-  cameraUpdateFrequency:
+  cameraUpdateDelay:
 
-    CameraUpdateFrequency allows you to alter the frequency which the MoveServer is sending MoveServerCameraFrameSlicePackets.  The value should fall into the range of 1 - 1000, and represents the millisecond delay interval at which packets will be sent.  For example, passing a value of 16 will result in a packet being sent every 16ms, equal to a frequency of 60hz.
+    CameraUpdateDelay allows you to alter the delay which the MoveServer is sending MoveServerCameraFrameSlicePackets.  The value should fall into the range of 1 - 1000, and represents the millisecond delay interval at which packets will be sent.  For example, passing a value of 16 will result in a packet being sent every 16ms, equal to a frequency of 60hz.
 
 
   rumble:

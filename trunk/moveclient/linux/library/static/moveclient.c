@@ -14,8 +14,8 @@
 #include <errno.h>
 #include "moveclient.h"
 
-static MoveServerPacket my_move_server_packet;
-static MoveServerCameraFrameSlicePacket my_move_server_camera_frame_slice_packet;
+static MoveServerPacket client_move_server_packet;
+static MoveServerCameraFrameSlicePacket client_move_server_camera_frame_slice_packet;
 pthread_mutex_t move_state_mutex;
 
 static int sendRequestPacket(uint32_t, uint32_t);
@@ -332,13 +332,13 @@ int updateMoveState(void) {
           deserializeMoveServerPacketHeader(move_server_packet_header_ptr);
 
           if (move_server_packet_header_ptr->packet_code == MOVE_PACKET_CODE_STANDARD) {
-            memcpy(&my_move_server_packet, (void *)move_server_packet_header_ptr, packet_size);
+            memcpy(&client_move_server_packet, (void *)move_server_packet_header_ptr, packet_size);
 
             // Deserialize packet
-            deserializeMoveServerPacket(&my_move_server_packet);
+            deserializeMoveServerPacket(&client_move_server_packet);
 
           }else if (move_server_packet_header_ptr->packet_code == MOVE_PACKET_CODE_CAMERA_FRAME_SLICE) {
-            memcpy(&my_move_server_camera_frame_slice_packet, (void *)move_server_packet_header_ptr, camera_packet_size);
+            memcpy(&client_move_server_camera_frame_slice_packet, (void *)move_server_packet_header_ptr, camera_packet_size);
 
           }
 
@@ -592,10 +592,10 @@ int movemeDisconnect() {
 
 
 // Copy local client move state into app's copy
-void movemeGetState(const int which_gem, MoveState *my_move_state, MoveStatus *my_move_status) {
+void movemeGetState(const int which_gem, MoveState *client_move_state, MoveStatus *client_move_status) {
   pthread_mutex_lock(&move_state_mutex);
-	*my_move_status = my_move_server_packet.status[which_gem];
-	*my_move_state = my_move_server_packet.state[which_gem];
+	*client_move_status = client_move_server_packet.status[which_gem];
+	*client_move_state = client_move_server_packet.state[which_gem];
   pthread_mutex_unlock(&move_state_mutex);
 
 }
@@ -649,26 +649,26 @@ int movemeResumeCamera(void) {
 }
 
 
-int movemeUpdateFrequency(uint32_t frequency) {
+int movemeUpdateDelay(uint32_t delay) {
 
   if (!s_connected) {
     return MOVE_CLIENT_ERROR;
 
   }
 
-  return sendRequestPacket(MOVE_CLIENT_REQUEST_DELAY_CHANGE, frequency);
+  return sendRequestPacket(MOVE_CLIENT_REQUEST_DELAY_CHANGE, delay);
 
 }
 
 
-int movemeUpdateCameraFrequency(uint32_t frequency) {
+int movemeUpdateCameraDelay(uint32_t delay) {
 
   if (!s_connected) {
     return MOVE_CLIENT_ERROR;
 
   }
 
-  return sendRequestPacket(MOVE_CLIENT_REQUEST_CAMERA_FRAME_DELAY_CHANGE, frequency);
+  return sendRequestPacket(MOVE_CLIENT_REQUEST_CAMERA_FRAME_DELAY_CHANGE, delay);
 
 }
 

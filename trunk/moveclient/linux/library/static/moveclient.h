@@ -55,6 +55,9 @@ typedef enum MOVE_CLIENT_REQUESTS {
 	MOVE_CLIENT_REQUEST_CAMERA_FRAME_PAUSE = 0x25,
 	MOVE_CLIENT_REQUEST_CAMERA_FRAME_RESUME = 0x26,
 
+	MOVE_CLIENT_REQUEST_DRAW_SWORD_DISABLE = 0x27, // no payload, disable sword drawing
+	MOVE_CLIENT_REQUEST_DRAW_SWORD_ENABLE = 0x28,  // no payload, enable sword drawing
+
 } MOVE_CLIENT_REQUESTS;
 
 
@@ -276,7 +279,6 @@ typedef struct _MoveServerRequestPacketPrepareCamera {
 
 int movemeConnect(const char *, const char *);
 int movemeDisconnect(void);
-void movemeGetState(const int, MoveState *, MoveStatus *);
 int movemePause(void);
 int movemeResume(void);
 int movemePauseCamera(void);
@@ -288,6 +290,9 @@ int movemeForceRGB(uint32_t, float, float, float);
 int movemeTrackHues(uint32_t, uint32_t, uint32_t, uint32_t);
 int movemePrepareCamera(uint32_t, float);
 int movemeCameraSetNumSlices(uint32_t);
+int movemeEnableSword(void);
+int movemeDisableSword(void);
+void movemeGetState(const int, MoveState *, MoveStatus *);
 
 #ifdef __cplusplus
 }

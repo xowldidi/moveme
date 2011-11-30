@@ -536,9 +536,6 @@ int movemeConnect(PCSTR lpRemoteAddress, PCSTR lpPort)
 // PS3 Disconnect
 int movemeDisconnect() {
 
-  // Cleanup critical section
-  DeleteCriticalSection(&clientMoveServerPacketCriticalSection);
-
   if (!sConnected) {
     return MOVE_CLIENT_OK;
   }
@@ -550,6 +547,9 @@ int movemeDisconnect() {
   if (sTransferring) {
     stopTransfer();
   }
+
+  // Cleanup critical section
+  DeleteCriticalSection(&clientMoveServerPacketCriticalSection);
 
   // Clear file descriptor
   FD_CLR(sTransferSocket, &sfd_read);
